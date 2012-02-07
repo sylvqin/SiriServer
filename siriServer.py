@@ -25,7 +25,7 @@ from sslDispatcher import ssl_dispatcher
 import signal, os
 
 class HandleConnection(ssl_dispatcher):
-    __not_recognized = {"de-DE": u"Entschuldigung, ich verstehe \"{0}\" nicht.", "en-US": u"Sorry I don't understand {0}"}
+    __not_recognized = {"de-DE": u"Entschuldigung, ich verstehe \"{0}\" nicht.", "en-US": u"Sorry I don't understand {0}","fr-FR": u"D\u00E9sol\u00E9 {0}"}
     __websearch = {"de-DE": u"Websuche", "en-US": u"Websearch"}
     def __init__(self, conn):
         asyncore.dispatcher_with_send.__init__(self, conn)
@@ -403,7 +403,6 @@ class SiriServer(asyncore.dispatcher):
             x.info("Got SIGTERM, closing server")
             self.close()
     
-
     def handle_accept(self):
         pair = self.accept()
         if pair is None:

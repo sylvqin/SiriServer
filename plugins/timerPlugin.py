@@ -44,48 +44,66 @@ class timerPlugin(Plugin):
     localizations = {
         'Timer': {
             "settingTimer": {
-                "en-US": u"Setting the timer\u2026"
+                "en-US": u"Setting the timer\u2026",
+                "fr-FR": u"D\u00E9marrage du minuteur\u2026"
             }, "timerWasSet": {
-                "en-US": "Your timer is set for {0}."
+                "en-US": "Your timer is set for {0}.",
+                "fr-FR": u"Le minuteur est en marche pour {0}"
             }, "timerIsAlreadyRunning": {
-                "en-US": u"Your timer\u2019s already running:"
+                "en-US": u"Your timer\u2019s already running:",
+                "fr-FR": u"Votre minuteur est d\u00E9ja en marche"
             }, "wontSetTimer": {
-                "en-US": "OK."
+                "en-US": "OK.",
+                "fr-FR": "OK."
             }, 'timerWasReset': {
-                'en-US': u'I\u2019ve canceled the timer.'
+                'en-US': u'I\u2019ve canceled the timer.',
+                'fr-FR': u'J\u2019ai annul\u00E9 le minuteur.'
             }, 'timerIsAlreadyStopped': {
-                'en-US': u'It\u2019s already stopped.'
+                'en-US': u'It\u2019s already stopped.',
+                'fr-FR': u'Le minuteur est d\u00E9ja arret\u00E9.'
             }, 'timerWasResumed': {
-                'en-US': u'It\u2019s resumed.'
+                'en-US': u'It\u2019s resumed.',
+                'fr-FR': u'C\u2019est reparti.'
             }, 'timerWasPaused': {
-                'en-US': u'It\u2019s paused.'
+                'en-US': u'It\u2019s paused.',
+                'fr-FR': u'C\u2019est en pause.'
             }, 'timerIsAlreadyPaused': {
-                'en-US': u'It\u2019s already paused.'
+                'en-US': u'It\u2019s already paused.',
+                'fr-FR': u'Le minuteur est d\u00E9ja en pause.'
             }, 'showTheTimer': {
-                'en-US': u'Here\u2019s the timer:'
+                'en-US': u'Here\u2019s the timer:',
+                'fr-FR': 'Voici le minuteur.'
             }
         }
     }
 
     res = {
         'setTimer': {
-            'en-US': '.*timer.*\s+([0-9/ ]*|a|an|the)\s+(secs?|seconds?|mins?|minutes?|hrs?|hours?)'
+            'en-US': '.*timer.*\s+([0-9/ ]*|a|an|the)\s+(secs?|seconds?|mins?|minutes?|hrs?|hours?)',
+            'fr-FR': '.*minuteur.*\s+([0-9/ ]*|un|une|le|la)\s+(secs?|secondes?|mins?|minutes?|hrs?|heures?)'
         }, 'resetTimer': {
-            'en-US': '.*(cancel|reset|stop).*timer'
+            'en-US': '.*(cancel|reset|stop).*timer',
+            'fr-FR': u'.*(annuler?|arr\u00EAt(\u00E9|e)r?|stop|stopper).*minuteur'
         }, 'resumeTimer': {
-            'en-US': '.*(resume|thaw|continue).*timer'
+            'en-US': '.*(resume|thaw|continue).*timer',
+            'fr-FR': '.*(reprendre|reprends?|continuer?|relancer?).*minuteur'
         }, 'pauseTimer': {
-            'en-US': '.*(pause|freeze|hold).*timer'
+            'en-US': '.*(pause|freeze|hold).*timer',
+            'fr-FR': '.*(pause|suspends?).*minuteur'
         }, 'showTimer': {
-            'en-US': '.*(show|display|see).*timer'
+            'en-US': '.*(show|display|see).*timer',
+            'fr-FR': '.*(montrer?|voir|afficher?).*minuteur'
         }, 'timerLength': {
-            'en-US': '([0-9/ ]*|a|an|the)\s+(secs?|seconds?|mins?|minutes?|hrs?|hours?)'
+            'en-US': '([0-9/ ]*|a|an|the)\s+(secs?|seconds?|mins?|minutes?|hrs?|hours?)',
+            'fr-FR': '([0-9/ ]*|un|une|le|la)\s+(secs?|secondes?|mins?|minutes?|hrs?|heures?)'
         }, 'articles': {
-            'en-US': 'a|an|the'
+            'en-US': 'a|an|the',
+            'fr-FR': 'un|une|le|la'
         }
     }
 
     @register("en-US", res['setTimer']['en-US'])
+    @register("fr-FR", res['setTimer']['fr-FR'])
     def setTimer(self, speech, language):
         m = re.match(timerPlugin.res['setTimer'][language], speech, re.IGNORECASE)
         timer_length = ' '.join(m.group(1, 2))
@@ -143,6 +161,7 @@ class timerPlugin(Plugin):
         self.complete_request()
 
     @register("en-US", res['resetTimer']['en-US'])
+    @register("fr-FR", res['resetTimer']['fr-FR'])
     def resetTimer(self, speech, language):
         response = self.getResponseForRequest(TimerGet(self.refId))
         timer_properties = response['properties']['timer']['properties']
@@ -165,6 +184,7 @@ class timerPlugin(Plugin):
             self.complete_request()
 
     @register("en-US", res['resumeTimer']['en-US'])
+    @register("fr-FR", res['resumeTimer']['fr-FR'])
     def resumeTimer(self, speech, language):
         response = self.getResponseForRequest(TimerGet(self.refId))
         timer_properties = response['properties']['timer']['properties']
@@ -189,6 +209,7 @@ class timerPlugin(Plugin):
             self.complete_request()
 
     @register("en-US", res['pauseTimer']['en-US'])
+    @register("fr-FR", res['pauseTimer']['fr-FR'])
     def pauseTimer(self, speech, language):
         response = self.getResponseForRequest(TimerGet(self.refId))
         timer_properties = response['properties']['timer']['properties']
@@ -219,6 +240,7 @@ class timerPlugin(Plugin):
             self.complete_request()
 
     @register("en-US", res['showTimer']['en-US'])
+    @register("fr-FR", res['showTimer']['fr-FR'])
     def showTimer(self, speech, language):
         response = self.getResponseForRequest(TimerGet(self.refId))
         timer_properties = response['properties']['timer']['properties']
