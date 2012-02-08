@@ -246,3 +246,33 @@ class smalltalk(Plugin):
             list = ("D\'accord, pourquoi pas.",u"Vous pensez des choses tr\u00E8s int\u00E9ressantes.","Je vois.",u"Je pensais la m\u00EAme chose.","Je le pense aussi.","C'est cela, oui.")
             self.say(random.choice(list))
         self.complete_request()
+
+    @register("fr-FR", "(.*trop bu.*)")
+    @register("en-US", "(.*drank.*)")
+    def st_alcool(self, speech, language):
+        if language == 'fr-FR':
+            self.say("Ne buvez jamais si vous avez du travail a faire, ne buvez jamais seul et ne buvez jamais quand le soleil brille.")
+        else:
+            self.say("Never drink if you have work to do, never drink alone and never drink when the sun is shining.")
+        self.complete_request()
+
+
+    @register("en-US", "(.*suicide.*)")
+    @register("fr-FR", "(.*suicider?.*)|(.*me pendre.*)")
+    def st_suicide(self, speech, language):
+        if language == 'en-US':
+            self.say("Ok, have fun.")
+        else:
+            self.say("D\'accord, amusez vous bien.")
+        self.complete_request()
+
+
+    @register("en-US", "(.*jailbreak.*)|(.*cydia.*)")
+    @register("fr-FR", "(.*jailbreak.*)|(.*cydia.*)")
+    def st_jailbreak(self, speech, language):
+        if language == 'en-US':
+            self.say("I assume you already did that, right?")
+        else:
+            self.say(u"Je suppose que vous l\'avez d\u00E9j\u00E0 fait, non?")
+        self.complete_request()
+

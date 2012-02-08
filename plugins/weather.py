@@ -14,7 +14,7 @@ from siriObjects.uiObjects import AddViews, AssistantUtteranceView
 from siriObjects.forecastObjects import *
 
 #Obtain API Key from wundergrounds.com
-weatherApiKey =""
+weatherApiKey ="995f2615f5eef4dc"
 
 class SiriWeatherFunctions():
     def __init__(self):
@@ -44,30 +44,31 @@ class SiriWeatherFunctions():
 class weatherPlugin(Plugin):
     localizations = {"weatherForecast": 
                         {"search":{
-                            0:{"de-DE": u"Einen Moment Geduld bitte...", "en-US": "Checking my sources..."},
-                            1:{"de-DE": u"Ich suche nach der Vorhersage ...", "en-US": "Please wait while I check that..."},
-                            2:{"de-DE": u"Einen Moment bitte ...", "en-US": "One moment please..."},
-                            3:{"de-DE": u"Ich suche nach Wetterdaten...", "en-US": "Trying to get weather data for this location..."},
+                            0:{"fr-FR": u"Je recherche...", "de-DE": u"Einen Moment Geduld bitte...", "en-US": "Checking my sources..."},
+                            1:{"fr-FR": u"Patientez ...", "de-DE": u"Ich suche nach der Vorhersage ...", "en-US": "Please wait while I check that..."},
+                            2:{"fr-FR": u"Attendez un instant ...", "de-DE": u"Einen Moment bitte ...", "en-US": "One moment please..."},
+                            3:{"fr-FR": u"Je tente de trouver la météo ...", "de-DE": u"Ich suche nach Wetterdaten...", "en-US": "Trying to get weather data for this location..."},
                             }, 
                         "forecast":{
                             "DAILY": {
-                                0:{"de-DE": u"Hier ist die Vorhersage für {0}, {1}", "en-US": "Here is the forecast for {0}, {1}"},
-                                1:{"de-DE": u"Hier ist die Wetterprognose für {0}, {1}", "en-US": "This is the forecast for {0}, {1}"},
-                                2:{"de-DE": u"Ich habe folgende Vorhersage für {0}, {1} gefunden", "en-US": "I found the following forecast for {0}, {1}"},
+                                0:{"fr-FR": u"Voici la météo pour {0}, {1}", "de-DE": u"Hier ist die Vorhersage für {0}, {1}", "en-US": "Here is the forecast for {0}, {1}"},
+                                1:{"fr-FR": u"Voilà la météo pour {0}, {1}", "de-DE": u"Hier ist die Wetterprognose für {0}, {1}", "en-US": "This is the forecast for {0}, {1}"},
+                                2:{"fr-FR": u"J'ai trouvé la météo pour {0}, {1}", "de-DE": u"Ich habe folgende Vorhersage für {0}, {1} gefunden", "en-US": "I found the following forecast for {0}, {1}"},
                                 },
                             "HOURLY": {
-                                0:{"de-DE": u"Hier ist die heutige Vorhersage für {0}, {1}", "en-US": "Here is today's forecast for {0}, {1}"},
-                                1:{"de-DE": u"Hier ist die Wetterprognose von heute für {0}, {1}", "en-US": "This is today's forecast for {0}, {1}"},
-                                2:{"de-DE": u"Ich habe folgende Tagesprognose für {0}, {1} gefunden", "en-US": "I found the following hourly forecast for {0}, {1}"},
+                                0:{"fr-FR": u"Voilà la météo du jour pour {0}, {1}", "de-DE": u"Hier ist die heutige Vorhersage für {0}, {1}", "en-US": "Here is today's forecast for {0}, {1}"},
+                                1:{"fr-FR": u"Voici la météo d'aujourd'hui pour {0}, {1}", "de-DE": u"Hier ist die Wetterprognose von heute für {0}, {1}", "en-US": "This is today's forecast for {0}, {1}"},
+                                2:{"fr-FR": u"J'ai trouvé la météo horaire pour {0}, {1}", "de-DE": u"Ich habe folgende Tagesprognose für {0}, {1} gefunden", "en-US": "I found the following hourly forecast for {0}, {1}"},
                                 }
                             },
                         "failure": {
-                                   "de-DE": "Ich konnte leider keine Wettervorhersage finden!", "en-US": "I'm sorry but I could not find the forecast for this location!"
+                                   "fr-FR": "Pardon, je n'ai pas pu trouver la meteo pour cet endroit.", "de-DE": "Ich konnte leider keine Wettervorhersage finden!", "en-US": "I'm sorry but I could not find the forecast for this location!"
                                    }
                             }
                         }
         
-    @register("de-DE", "(.*Wetter.*)|(.*Vorhersage.*)")     
+    @register("de-DE", "(.*Wetter.*)|(.*Vorhersage.*)")
+    @register("fr-FR", u"(.*m\u00E9t\u00E9o.*)|(.*temps.*)") 
     @register("en-US", "(.*Weather.*)|(.*forecast.*)")
     def weatherForecastLookUp(self, speech, language):
         if weatherApiKey =="":
@@ -93,10 +94,23 @@ class weatherPlugin(Plugin):
             speech = speech.replace("aktuell","")
             speech = speech.replace(u"in den nächsten Stunden","")
             speech = speech.replace(u"für heute","")
+        if (speech.count("aujourd'hui") > 0 or speech.count("moment") > 0 or speech.count(" pour le moment") > 0) and language=="fr-FR":
+            viewType = "HOURLY"
+            speech = speech.replace("aujourd'hui","")
+            speech = speech.replace("aujourd'hui","")
+            speech = speech.replace("en ce moment","")
+            speech = speech.replace("pour le moment","")
+            speech = speech.replace(" aujourd'hui"," in ")
+            speech = speech.replace(" pour "," in ")
         
         if language=="en-US":
             speech = speech.replace(" for "," in ")
-            
+			
+        if language=="fr-FR":
+            speech = speech.replace(" pour "," in ")
+            speech = speech.replace(" dans "," in ")
+            speech = speech.replace(u" \u00E0 "," in ")
+			
         if language=="de-DE":
             speech = speech.replace(u"in den nächsten Tagen","")
             speech = speech.replace(u"in den nächsten paar Tagen","")
@@ -120,7 +134,7 @@ class weatherPlugin(Plugin):
         countryOrCity = re.match("(?u).* in ([\w ]+)", speech, re.IGNORECASE)
         if countryOrCity != None:
             countryOrCity = countryOrCity.group(1).strip()
-            print "found forecast"
+            print "found forecast " + countryOrCity.encode("utf-8")
             # lets see what we got, a country or a city... 
             # lets use google geocoding API for that
             url = "http://maps.googleapis.com/maps/api/geocode/json?address={0}&sensor=false&language={1}".format(urllib.quote_plus(countryOrCity.encode("utf-8")), language)

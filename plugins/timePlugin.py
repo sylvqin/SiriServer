@@ -16,22 +16,23 @@ geonames_user="test2"
 class timePlugin(Plugin):
     
     localizations = {"currentTime": 
-                        {"search":{"de-DE": "Es wird gesucht ...", "en-US": "Looking up ..."}, 
-                         "currentTime": {"de-DE": "Es ist @{fn#currentTime}", "en-US": "It is @{fn#currentTime}"}}, 
+                        {"search":{"de-DE": "Es wird gesucht ...", "fr-FR": "Je recherche ...", "en-US": "Looking up ..."}, 
+                         "currentTime": {"de-DE": "Es ist @{fn#currentTime}", "fr-FR": "Il est @{fn#currentTime}", "en-US": "It is @{fn#currentTime}"}}, 
                      "currentTimeIn": 
-                        {"search":{"de-DE": "Es wird gesucht ...", "en-US": "Looking up ..."}, 
+                        {"search":{"de-DE": "Es wird gesucht ...", "fr-FR": "Je recherche ...}", "en-US": "Looking up ..."}, 
                          "currentTimeIn": 
                                 {
-                                "tts": {"de-DE": u"Die Uhrzeit in {0},{1} ist @{{fn#currentTimeIn#{2}}}:", "en-US": "The time in {0},{1} is @{{fn#currentTimeIn#{2}}}:"},
-                                "text": {"de-DE": u"Die Uhrzeit in {0}, {1} ist @{{fn#currentTimeIn#{2}}}:", "en-US": "The time in {0}, {1} is @{{fn#currentTimeIn#{2}}}:"}
+                                "tts": {"de-DE": u"Die Uhrzeit in {0},{1} ist @{{fn#currentTimeIn#{2}}}:", "fr-FR": "Il est @{{fn#currentTimeIn#{2}}}: {0},{1}", "en-US": "The time in {0},{1} is @{{fn#currentTimeIn#{2}}}:"},
+                                "text": {"de-DE": u"Die Uhrzeit in {0}, {1} ist @{{fn#currentTimeIn#{2}}}:", "fr-FR": "Il est @{{fn#currentTimeIn#{2}}}: {0},{1}", "en-US": "The time in {0}, {1} is @{{fn#currentTimeIn#{2}}}:"}
                                 }
                         },
                     "failure": {
-                                "de-DE": "Ich kann dir die Uhr gerade nicht anzeigen!", "en-US": "I cannot show you the clock right now"
+                                "de-DE": "Ich kann dir die Uhr gerade nicht anzeigen!", "fr-FR": "Je ne peux pas vous afficher l'heure pour le moment.", "en-US": "I cannot show you the clock right now"
                                 }
                     }
 
-    @register("de-DE", "(Wie ?viel Uhr.*)|(.*Uhrzeit.*)")     
+    @register("de-DE", "(Wie ?viel Uhr.*)|(.*Uhrzeit.*)")
+    @register("fr-FR", "(Quelle heure .*)|(.*heure actuelle.*)") 	
     @register("en-US", "(What.*time.*)|(.*current time.*)")
     def currentTime(self, speech, language):
         #first tell that we look it up
@@ -50,6 +51,7 @@ class timePlugin(Plugin):
         self.complete_request()
     
     @register("de-DE", "(Wieviel Uhr.*in ([\w ]+))|(Uhrzeit.*in ([\w ]+))")
+    @register("fr-FR", u"((Quelle|Quel) heure.*(\u00E0|dans) ([\w ]+))|(heure actuelle.*(\u00E0|dans) ([\w ]+))")
     @register("en-US", "(What.*time.*in ([\w ]+))|(.*current time.*in ([\w ]+))")
     def currentTimeIn(self, speech, language):
         view = AddViews(self.refId, dialogPhase="Reflection")
@@ -57,9 +59,10 @@ class timePlugin(Plugin):
         self.sendRequestWithoutAnswer(view)
         
         error = False
-        countryOrCity = re.match("(?u).* in ([\w ]+)$", speech, re.IGNORECASE)
+        countryOrCity = re.match("(?u).* (\u00E0|dans|in) ([\w ]+)$", speech, re.IGNORECASE)
         if countryOrCity != None:
-            countryOrCity = countryOrCity.group(1).strip()
+            countryOrCity = countryOrCity.group(2).strip()
+            print countryOrCity
             # lets see what we got, a country or a city... 
             # lets use google geocoding API for that
             url = "http://maps.googleapis.com/maps/api/geocode/json?address={0}&sensor=false&language={1}".format(urllib.quote_plus(countryOrCity), language)
