@@ -276,3 +276,8 @@ class smalltalk(Plugin):
             self.say(u"Je suppose que vous l\'avez d\u00E9j\u00E0 fait, non?")
         self.complete_request()
 
+    @register("fr-FR", "(.*vierge.*)")
+    def st_vierge(self, speech, language):
+        if language == 'fr-FR':
+            self.say("Trouve quelqu'un pour te violer, et on en parlera plus.")
+        self.complete_request()
